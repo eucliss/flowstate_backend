@@ -10,14 +10,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type user struct {
-	Username string `json:"username" form:"username"`
-	Password string `json:"password" form:"password"`
-}
-
 // Change this
 var secretKey = []byte("your-256-bit-secret")
-var LoggedInUsers = make(map[string]user)
 
 var authLogger *slog.Logger
 
@@ -29,18 +23,16 @@ func AddAuth(router *gin.Engine, l *slog.Logger) func(c *gin.Context) {
 }
 
 func login(c *gin.Context) {
-	var u user
+	var u User
 	c.Bind(&u)
-
-	if u.Username == "admin" && u.Password == "password" || u.Username == "user" && u.Password == "password" {
-		authLogger.Info("Logging in user", "username", u.Username)
+	authLogger.Info("Logging in user", "username", u.Username)
+	if u.Exists() && u.LoginSuccess() {
+		authLogger.Info("User exists and login successful")
 		token, err := CreateJWT(u.Username)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"Error creating token": err.Error()})
 			return
 		}
-
-		LoggedInUsers[u.Username] = u
 
 		c.SetCookie("Authorization", token, 3600, "/", "localhost", false, true)
 		c.Redirect(http.StatusSeeOther, "/")

@@ -19,6 +19,9 @@ func setupAuthTestRouter() *gin.Engine {
 	router := gin.Default()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	AddAuth(router, logger)
+	InitUserDB(logger, "test")
+	// user := User{Username: "admin", Password: "password"}
+	// user.Create()
 	return router
 }
 
@@ -51,7 +54,7 @@ func TestLogin(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
-			body := user{
+			body := User{
 				Username: tt.username,
 				Password: tt.password,
 			}

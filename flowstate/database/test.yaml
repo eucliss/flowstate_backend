@@ -1,0 +1,46 @@
+flowname: "flow1"
+id: "12345"
+nodes:
+  - id: "1"
+    type: "queryNode"
+    position:
+      x: 0.1
+      y: 0.1
+    data:
+      label: "Query Node 1"
+      sql: "SELECT * FROM table"
+      successRoute:
+        leftValue: ""
+        rightValue: ""
+        operator: ""
+  - id: "2"
+    type: "textNode"
+    position:
+      x: 100
+      y: 100
+    data:
+      label: "Text Node"
+      content: "Sample text content"
+  - id: "3"
+    type: "countNode"
+    position:
+      x: 200
+      y: 200
+    data:
+      label: "Count Node 1"
+      sql: "SELECT * FROM table"
+edges:
+  - id: "1->2"
+    source: "1"
+    target: "2"
+    animated: true
+    sourceHandle: "bottom"
+    targetHandle: "top"
+    type: "smoothstep"
+  - id: "2->3"
+    source: "2"
+    target: "3"
+    animated: true
+    sourceHandle: "top"
+    targetHandle: "bottom"
+    type: "smoothstep"
