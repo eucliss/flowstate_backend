@@ -1,6 +1,7 @@
 package flowstate
 
 import (
+	"errors"
 	"log/slog"
 
 	"gorm.io/gorm"
@@ -14,15 +15,21 @@ type User struct {
 
 var userLogger *slog.Logger
 var UserDB *gorm.DB
+var initialized bool
 
 func UsersDatabase(l *slog.Logger, dbType string) *gorm.DB {
 	userLogger = l
 	userLogger.Info("Loading users database", "dbType", dbType)
 	UserDB = Database(l, dbType, "flowstate_users", &User{})
+	initialized = true
 	return UserDB
 }
 
 func (user *User) Create() (int64, error) {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return 0, errors.New("users database not initialized")
+	}
 	result := UserDB.Create(&user) // pass pointer of data to Create
 
 	if result.Error != nil {
@@ -35,6 +42,10 @@ func (user *User) Create() (int64, error) {
 }
 
 func (user *User) Update() (int64, error) {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return 0, errors.New("users database not initialized")
+	}
 	result := UserDB.Save(&user)
 	if result.Error != nil {
 		userLogger.Error("Failed to update user", "error", result.Error)
@@ -44,6 +55,10 @@ func (user *User) Update() (int64, error) {
 }
 
 func (user *User) Get() *User {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return nil
+	}
 	result := UserDB.First(&user, "username = ?", user.Username)
 	if result.Error != nil {
 		userLogger.Error("Failed to get user", "error", result.Error)
@@ -57,15 +72,27 @@ func (user *User) Get() *User {
 }
 
 func (user *User) Delete() {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return
+	}
 	UserDB.Delete(&user)
 	userLogger.Info("User deleted", "id", user.Model.ID)
 }
 
 func (user *User) Exists() bool {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return false
+	}
 	return UserDB.First(&user, "username = ?", user.Username).RowsAffected > 0
 }
 
 func (user *User) LoginSuccess() bool {
+	if !initialized {
+		userLogger.Error("Users database not initialized")
+		return false
+	}
 	res := user.Get()
 	if res == nil {
 		return false

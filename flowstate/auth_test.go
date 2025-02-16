@@ -19,7 +19,7 @@ func setupAuthTestRouter() *gin.Engine {
 	router := gin.Default()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	AddAuth(router, logger)
-	InitUserDB(logger, "test")
+	UsersDatabase(logger, "test")
 	// user := User{Username: "admin", Password: "password"}
 	// user.Create()
 	return router

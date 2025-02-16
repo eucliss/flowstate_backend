@@ -14,7 +14,7 @@ type dummyStruct struct {
 }
 
 // TestDatabaseOperations groups database creation/deletion tests
-func TestDatabaseOperations(t *testing.T) {
+func TestDatabaseOps(t *testing.T) {
 	databaseLogger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	t.Run("Create Database", func(t *testing.T) {
