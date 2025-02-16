@@ -35,10 +35,10 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	flowstate.InitUserDB(logger, "prod")
-
 	// admin := flowstate.User{Username: "admin", Password: "password"}
 	// flowstate.CreateUser(db, &admin)
+
+	flowstate.UsersDatabase(logger, "test")
 	a := flowstate.User{Username: "admin"}
 	user := a.Get()
 	fmt.Println(user)
